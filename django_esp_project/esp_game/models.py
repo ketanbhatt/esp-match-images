@@ -17,7 +17,10 @@ class SecondaryImage(BaseImage):
 	score = models.IntegerField(default=0)
 
 class Game(models.Model):
-	player = models.IntegerField(default=1)
+	players = models.IntegerField(default=1)
+
+	def __unicode__(self):
+		return str(self.id) + ' ' + str(self.players)
 
 class Question(models.Model):
 	game = models.ForeignKey(Game)

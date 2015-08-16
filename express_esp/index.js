@@ -2,23 +2,21 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.get('/', function(req, res){
-	res.sendfile('connect.html');
-});
-
 io.on('connection', function(socket){
 	console.log('a user connected');
 	socket.on('join', function (data) {
-		socket.join(data.email);
+		socket.join(data.channel);
 		console.log("joined")
+		io.sockets.in(data.channel).emit('new_msg', {msg: 'hello'});
 	});
 });
+
 
 http.listen(3000, function(){
 	console.log('listening on *:3000');
 });
 
-setTimeout(function() {
-	io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});
-	console.log("aaahha")
-}, 10000)
+app.post('/pair', function(req, res){
+	console.log("Pair hego re!")
+	res.send('OK')
+});
