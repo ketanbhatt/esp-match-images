@@ -27,7 +27,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Implement views for starting a new game 
 * [ ] Delete game if any of the player disconnects
 * [x] Wait for another player to join
-* [ ] Start game when two players are paired
+* [x] Start game when two players are paired
 * [ ] Throw same question to paired players
 * [ ] Let any player select an image and show message to second player
 * [ ] Wait for responses, submit when both player choose the same image

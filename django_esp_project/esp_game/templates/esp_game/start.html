@@ -1,2 +1,11 @@
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script>
+	var socket = io('{{ socketURL }}');
+	var channel = "{{ game.id }}"
+	socket.emit('join', {channel: channel});
+	socket.on("new_msg", function(data) {
+	    alert(data.msg);
+	});
+</script>
 <h1>lets play</h1>
 <a href="{% url 'esp_game:index' %}">Index</a>

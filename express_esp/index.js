@@ -1,6 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var bodyParser = require('body-parser')
+
+app.use(bodyParser.json());  
 
 io.on('connection', function(socket){
 	console.log('a user connected');
@@ -17,6 +20,6 @@ http.listen(3000, function(){
 });
 
 app.post('/pair', function(req, res){
-	console.log("Pair hego re!")
+	io.sockets.in(req.body.game).emit('paired');
 	res.send('OK')
 });

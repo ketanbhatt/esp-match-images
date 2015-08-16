@@ -15,11 +15,13 @@ def index(request):
 def setup_game(request):
 	old_game = Game.objects.filter(players=1).first()
 	if old_game:
+		print "old game"
 		old_game.players = F('players') + 1
 		old_game.save()
-		requests.post(socketURL + '/pair')
-		return redirect('esp_game:start_game')
+		r = requests.post(socketURL + '/pair', json={'game': old_game.id})
+		return redirect('esp_game:start_game', game_id=old_game.id)
 	else:
+		print "new game"
 		new_game = Game()
 		new_game.save()
 		context = {
@@ -28,5 +30,11 @@ def setup_game(request):
 		}
 		return render(request, 'esp_game/wait.html', context)
 
-def start_game(request):
-	return render(request, 'esp_game/start.html')
+def start_game(request, game_id):
+	print "start game"
+	game = Game.objects.get(id=game_id)
+	context = {
+		'game': game,
+		'socketURL': socketURL
+	}
+	return render(request, 'esp_game/start.html', context)
