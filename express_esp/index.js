@@ -12,6 +12,15 @@ io.on('connection', function(socket){
 		console.log("joined")
 		io.sockets.in(data.channel).emit('new_msg', {msg: 'hello'});
 	});
+	socket.on('player_waiting_server', function (data) {
+		socket.broadcast.in(data.channel).emit('player_waiting');
+	});
+	socket.on('answers_match_server', function (data) {
+		io.sockets.in(data.channel).emit('answers_match', {newQuestion: data.newQuestion});
+	});
+	socket.on('match_fail_server', function (data) {
+		io.sockets.in(data.channel).emit('match_fail');
+	});
 });
 
 

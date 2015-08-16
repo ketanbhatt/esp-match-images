@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import F
@@ -47,24 +48,27 @@ def start_game(request, game_id):
 def ajax_submit_choice(request):
 	questionId = request.POST.get('questionId')
 	playerChoice = request.POST.get('playerChoice')
+	curr_question = Question.objects.get(id=questionId)
 
-	question = Question.objects.get(id=questionId)
-	if not question.firstPlayerChoice:
-		question.firstPlayerChoice = playerChoice
-		question.save()
-		# see how to respond to ajax call
-		# emit socket event "player submitted answer"
+	if not curr_question.firstPlayerChoice:
+		curr_question.firstPlayerChoice = playerChoice
+		curr_question.save()
+		return JsonResponse({"status": "wait"})
 	else:
-		if question.firstPlayerChoice == playerChoice:
-			pass
-			# Increase score of Secondary Image
-			# Delete old question
-			# generate new question
-			# return ajax response
-			# emit socket event "Answers match"
+		if str(curr_question.firstPlayerChoice) == str(playerChoice):
+			secondaryImage = SecondaryImage.objects.get(id=playerChoice)
+			secondaryImage.score = F('score') + 1
+			secondaryImage.save()
+			randomPrimaryImage = PrimaryImage.objects.order_by('?').first()
+			new_question = Question(game=curr_question.game, primaryImage=randomPrimaryImage)
+			new_question.save()
+			curr_question.delete()
+			return JsonResponse({"status": "match", "newQuestion": new_question.id})
 		else:
-			question.firstPlayerChoice = null
-			question.save()
-			# return ajax response
-			# emit socket events "Answers dont match"
+			curr_question.firstPlayerChoice = None
+			curr_question.save()
+			return JsonResponse({"status": "fail"})
+			
+def ajax_get_question(request, questionId):
+	pass
 			

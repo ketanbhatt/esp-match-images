@@ -29,10 +29,11 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Wait for another player to join
 * [x] Start game when two players are paired
 * [x] Throw same question to paired players
-* [ ] Let any player select an image and show message to second player
-* [ ] Wait for responses, submit when both player choose the same image
-* [ ] If both players select a different image, open the question for resubmission
+* [x] Let any player select an image and show message to second player
+* [x] Wait for responses, submit when both player choose the same image
+* [x] If both players select a different image, open the question for resubmission
 * [ ] Move to next question on successful submit
+* [ ] Write Automation script to add images to database
 * [ ] Update game table on game finish
 * [ ] Self-pat
 * [ ] Work on the UI
@@ -42,3 +43,4 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [ ] Make record getting more efficient (using order_by('?') atm)
 * [ ] Handle client disconnect/ page refresh
 * [ ] Use mongo/redis/postgres in place of sqlite
+* [ ] Finish game on some number of unsuccessful tries

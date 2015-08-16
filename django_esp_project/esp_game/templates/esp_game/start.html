@@ -9,10 +9,27 @@
 	socket.on("new_msg", function(data) {
 		alert(data.msg);
 	});
+	socket.on("player_waiting", function() {
+		$("h1").append("<h1 id='message'>Opponent submitted his answer</h1>");
+	});
+	socket.on("answers_match", function(data) {
+		alert("Answers Matched!")
+		$.get( "{% url 'esp_game:ajax_get_question' %}", {'questionId': data.newQuestion})
+			.done(function( data ) {
+				console.log("done!")
+			});
+	});
+	socket.on("match_fail", function() {
+		alert("Answers Didn't match, try again")
+		$("#message").remove()
+		$("#makeChoice").trigger('reset');
+		$("#makeChoice img").last().after('<input type="submit" value="Submit" id="submit">')
+	});
 
 	$(document).ready(function() {
 		$("#makeChoice").submit(function( event ) {
 			event.preventDefault();
+			$("#submit").remove()
 			var playerChoice = $("#makeChoice").serializeArray()[0].value
 			var questionId = $("#question").attr("value")
 			var req_data = {
@@ -22,7 +39,14 @@
 			}
 			$.post( "{% url 'esp_game:ajax_submit_choice' %}", req_data)
 				.done(function( data ) {
-					alert( "Data Loaded: " + data );
+					if(data.status == "wait") {
+						$("h1").append("<h1 id='message'>Waiting for opponent</h1>");
+						socket.emit('player_waiting_server', {channel: channel});
+					} else if(data.status == "match") {
+						socket.emit('answers_match_server', {channel: channel, newQuestion: data.newQuestion});
+					} else if(data.status == "fail") {
+						socket.emit('match_fail_server', {channel: channel});
+					}
 				});
 		});
 	})
@@ -39,7 +63,7 @@
 	<input type="radio" name="playerChoice" value="{{ question.secondaryImage2.id }}"><img src="{{ question.secondaryImage2.url }}" alt="Secondary Image 2">
 	<input type="radio" name="playerChoice" value="{{ question.secondaryImage3.id }}"><img src="{{ question.secondaryImage3.url }}" alt="Secondary Image 3">
 
-	<input type="submit" value="Submit">
+	<input type="submit" value="Submit" id="submit">
 </form>
 
 
