@@ -22,7 +22,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Create basic routes and views
 * [x] Create Express app
 * [x] Implement sockets to make connection with client
-* [ ] Set up a DB for storing games, maybe Mongo
+* [x] Set up a DB for storing games and questions, maybe Mongo
 * [ ] Implement Express routes to receive information from Django
 * [ ] Implement views for starting a new game and delete game if the initiator player closes session
 * [ ] Wait for another player to join

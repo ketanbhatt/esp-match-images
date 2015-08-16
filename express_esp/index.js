@@ -18,4 +18,7 @@ http.listen(3000, function(){
 	console.log('listening on *:3000');
 });
 
-// io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});
+setTimeout(function() {
+	io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});
+	console.log("aaahha")
+}, 10000)
