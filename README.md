@@ -28,12 +28,17 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [ ] Delete game if any of the player disconnects
 * [x] Wait for another player to join
 * [x] Start game when two players are paired
-* [ ] Throw same question to paired players
+* [x] Throw same question to paired players
 * [ ] Let any player select an image and show message to second player
 * [ ] Wait for responses, submit when both player choose the same image
 * [ ] If both players select a different image, open the question for resubmission
 * [ ] Move to next question on successful submit
 * [ ] Update game table on game finish
-* [ ] Do a self-pat
+* [ ] Self-pat
 * [ ] Work on the UI
 * [ ] Another self-pat
+
+## Extending the Project:
+* [ ] Make record getting more efficient (using order_by('?') atm)
+* [ ] Handle client disconnect/ page refresh
+* [ ] Use mongo/redis/postgres in place of sqlite

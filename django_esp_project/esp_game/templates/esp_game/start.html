@@ -1,11 +1,47 @@
+{% extends "esp_game/base.html" %}
+
+{% block head_scripts %}
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script>
 	var socket = io('{{ socketURL }}');
 	var channel = "{{ game.id }}"
 	socket.emit('join', {channel: channel});
 	socket.on("new_msg", function(data) {
-	    alert(data.msg);
+		alert(data.msg);
 	});
+
+	$(document).ready(function() {
+		$("#makeChoice").submit(function( event ) {
+			event.preventDefault();
+			var playerChoice = $("#makeChoice").serializeArray()[0].value
+			var questionId = $("#question").attr("value")
+			var req_data = {
+				'playerChoice': playerChoice,
+				'questionId': questionId,
+				'csrfmiddlewaretoken': '{{ csrf_token }}'
+			}
+			$.post( "{% url 'esp_game:ajax_submit_choice' %}", req_data)
+				.done(function( data ) {
+					alert( "Data Loaded: " + data );
+				});
+		});
+	})
 </script>
+{% endblock %}
+
+{% block body_custom %}
 <h1>lets play</h1>
+
+<form action="#" id="makeChoice">
+	<img id="question" src="{{ question.primaryImage.url }}" alt="Primary Image" value="{{ question.id }}">
+
+	<input type="radio" name="playerChoice" value="{{ question.secondaryImage1.id }}"><img src="{{ question.secondaryImage1.url }}" alt="Secondary Image 1">
+	<input type="radio" name="playerChoice" value="{{ question.secondaryImage2.id }}"><img src="{{ question.secondaryImage2.url }}" alt="Secondary Image 2">
+	<input type="radio" name="playerChoice" value="{{ question.secondaryImage3.id }}"><img src="{{ question.secondaryImage3.url }}" alt="Secondary Image 3">
+
+	<input type="submit" value="Submit">
+</form>
+
+
 <a href="{% url 'esp_game:index' %}">Index</a>
+{% endblock %}

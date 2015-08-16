@@ -18,7 +18,10 @@ def setup_game(request):
 		print "old game"
 		old_game.players = F('players') + 1
 		old_game.save()
-		r = requests.post(socketURL + '/pair', json={'game': old_game.id})
+		requests.post(socketURL + '/pair', json={'game': old_game.id})
+		randomPrimaryImage = PrimaryImage.objects.order_by('?').first()
+		firstQuestion = Question(game=old_game, primaryImage=randomPrimaryImage)
+		firstQuestion.save()
 		return redirect('esp_game:start_game', game_id=old_game.id)
 	else:
 		print "new game"
@@ -33,8 +36,35 @@ def setup_game(request):
 def start_game(request, game_id):
 	print "start game"
 	game = Game.objects.get(id=game_id)
+	question = Question.objects.get(game=game)
 	context = {
 		'game': game,
+		'question': question,
 		'socketURL': socketURL
 	}
 	return render(request, 'esp_game/start.html', context)
+
+def ajax_submit_choice(request):
+	questionId = request.POST.get('questionId')
+	playerChoice = request.POST.get('playerChoice')
+
+	question = Question.objects.get(id=questionId)
+	if not question.firstPlayerChoice:
+		question.firstPlayerChoice = playerChoice
+		question.save()
+		# see how to respond to ajax call
+		# emit socket event "player submitted answer"
+	else:
+		if question.firstPlayerChoice == playerChoice:
+			pass
+			# Increase score of Secondary Image
+			# Delete old question
+			# generate new question
+			# return ajax response
+			# emit socket event "Answers match"
+		else:
+			question.firstPlayerChoice = null
+			question.save()
+			# return ajax response
+			# emit socket events "Answers dont match"
+			
