@@ -17,10 +17,12 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 
 ## TODO:
 
-* [ ] Make user signup and login
-* [ ] Create models for images (both primary and secondary)
-* [ ] Create Express app and connect with Django
+* [ ] Make user signup and login - *Not Required*
+* [x] Create models for images (both primary and secondary)
+* [x] Create basic routes and views
+* [ ] Create Express app
 * [ ] Implement sockets to make connection with client
+* [ ] Implement Express routes to receive information from Django
 * [ ] Implement views for starting a new game and delete game if the initiator player closes session
 * [ ] Wait for another player to join
 * [ ] Start game when two players are paired
@@ -30,4 +32,6 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [ ] If both players select a different image, open the question for resubmission
 * [ ] Move to next question on successful submit
 * [ ] Update game table on game finish
-* [ ] Self pat yourself
+* [ ] Do a self-pat
+* [ ] Work on the UI
+* [ ] Another self-pat
