@@ -12,7 +12,7 @@ class SecondaryImageAdmin(admin.ModelAdmin):
 	list_display = ('id', 'url', 'score')
 
 class QuestionAdmin(admin.ModelAdmin):
-	list_display = ('game', 'primaryImage', 'firstPlayerChoice')
+	list_display = ('id', 'game', 'primaryImage', 'firstPlayerChoice')
 
 admin.site.register(PrimaryImage, PrimaryImageAdmin)
 admin.site.register(SecondaryImage, SecondaryImageAdmin)

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
 from django.conf import settings
@@ -13,37 +13,42 @@ socketURL = settings.SOCKET_URL
 def index(request):
 	return render(request, 'esp_game/index.html')
 
-def setup_game(request):
+def start_game(request):
+	print "start_game"
 	old_game = Game.objects.filter(players=1).first()
 	if old_game:
 		print "old_game"
 		old_game.players = F('players') + 1
 		old_game.save()
-		requests.post(socketURL + '/pair', json={'game': old_game.id})
 		randomPrimaryImage = PrimaryImage.objects.order_by('?').first()
 		firstQuestion = Question(game=old_game, primaryImage=randomPrimaryImage)
 		firstQuestion.save()
-		return redirect('esp_game:start_game', game_id=old_game.id)
+		context = {
+			'status': 'paired',
+			'heading': 'Lets Play!',
+			'game': old_game,
+			'question': firstQuestion,
+			'socketURL': socketURL
+		}
+		return render(request, 'esp_game/start.html', context)
 	else:
 		print "new_game"
 		new_game = Game()
 		new_game.save()
 		context = {
+			'heading': 'Waiting for Opponent to join',
 			'game': new_game,
 			'socketURL': socketURL
 		}
-		return render(request, 'esp_game/wait.html', context)
+		return render(request, 'esp_game/start.html', context)
 
-def start_game(request, game_id):
-	print "start_game"
-	game = Game.objects.get(id=game_id)
-	question = Question.objects.get(game=game)
-	context = {
-		'game': game,
-		'question': question,
-		'socketURL': socketURL
-	}
-	return render(request, 'esp_game/start.html', context)
+def game_disconnected(request, game_id):
+	print "game_disconnected"
+	game = get_object_or_404(Game, pk=game_id)
+	question = Question.objects.filter(game=game)
+	question.delete()
+	game.delete()
+	return render(request, 'esp_game/disconnect.html')
 
 def ajax_submit_choice(request):
 	print "ajax_submit_choice"
@@ -75,7 +80,7 @@ def ajax_submit_choice(request):
 			
 def ajax_get_question(request, question_id):
 	print "getting question"
-	question = Question.objects.get(id=question_id)
+	question = get_object_or_404(Question, pk=question_id)
 	question_json = {
 		'game': question.game.id,
 		'primaryImage': question.primaryImage.url,

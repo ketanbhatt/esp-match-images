@@ -5,9 +5,20 @@
 <script>
 	var socket = io('{{ socketURL }}');
 	var channel = "{{ game.id }}"
+	var status = "{{ status }}"
 	socket.emit('join', {channel: channel});
-	socket.on("new_msg", function(data) {
-		alert(data.msg);
+	if(status == 'paired') {
+		socket.emit('paired_server', {question: "{{ question.id }}", heading: "{{ heading }}"});
+	}
+	socket.on("paired", function(data) {
+		var heading = data.heading
+		var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.question.toString());
+		$.get( url_mask)
+			.done(function( data ) {
+				var newForm = generate_form(data.question)
+				$("#heading").text(heading);
+				$("#heading").after(newForm)
+			});
 	});
 	socket.on("player_waiting", function() {
 		$("h1").append("<h1 id='message'>Opponent submitted his answer</h1>");
@@ -17,9 +28,7 @@
 		var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.newQuestion.toString());
 		$.get( url_mask)
 			.done(function( data ) {
-				var data = data.question
-				var newForm = '<form action="#" id="makeChoice"><img id="question" src="'+ data.primaryImage +'" alt="Primary Image" value="'+ data.id +'"><input type="radio" name="playerChoice" value="'+ data.secondaryImage1[0] +'"><img src="'+ data.secondaryImage1[1] +'" alt="Secondary Image 1"><input type="radio" name="playerChoice" value="'+ data.secondaryImage2[0] +'"><img src="'+ data.secondaryImage2[1] +'" alt="Secondary Image 2"><input type="radio" name="playerChoice" value="'+ data.secondaryImage3[0] +'"><img src="'+ data.secondaryImage3[1] +'" alt="Secondary Image 3"><input type="submit" value="Submit" id="submit"></form>'
-
+				var newForm = generate_form(data.question)
 				$("#makeChoice").replaceWith(newForm)
 				$("#message").remove()
 			});
@@ -29,6 +38,11 @@
 		$("#message").remove()
 		$("#makeChoice").trigger('reset');
 		$("#makeChoice img").last().after('<input type="submit" value="Submit" id="submit">')
+	});
+	socket.on("player_disconnect", function(data) {
+		alert("Opponent disconnected from the game, the game will now end");
+		var url_mask= "{% url 'esp_game:game_disconnected' 12345 %}".replace(/12345/, data.channel.toString());
+		window.location.replace(url_mask);
 	});
 
 	$(document).ready(function() {
@@ -55,12 +69,20 @@
 				});
 		});
 	})
+
+	var generate_form = function(question) {
+		var data = question
+		var newForm = '<form action="#" id="makeChoice"><img id="question" src="'+ data.primaryImage +'" alt="Primary Image" value="'+ data.id +'"><input type="radio" name="playerChoice" value="'+ data.secondaryImage1[0] +'"><img src="'+ data.secondaryImage1[1] +'" alt="Secondary Image 1"><input type="radio" name="playerChoice" value="'+ data.secondaryImage2[0] +'"><img src="'+ data.secondaryImage2[1] +'" alt="Secondary Image 2"><input type="radio" name="playerChoice" value="'+ data.secondaryImage3[0] +'"><img src="'+ data.secondaryImage3[1] +'" alt="Secondary Image 3"><input type="submit" value="Submit" id="submit"></form>'
+		return newForm
+	}
+
 </script>
 {% endblock %}
 
 {% block body_custom %}
-<h1>lets play</h1>
+<h1 id="heading">{{ heading }}</h1>
 
+{% if status == 'paired' %}
 <form action="#" id="makeChoice">
 	<img id="question" src="{{ question.primaryImage.url }}" alt="Primary Image" value="{{ question.id }}">
 
@@ -70,7 +92,7 @@
 
 	<input type="submit" value="Submit" id="submit">
 </form>
-
+{% endif %}
 
 <a href="{% url 'esp_game:index' %}">Index</a>
 {% endblock %}

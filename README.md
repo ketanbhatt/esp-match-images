@@ -25,7 +25,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Set up a DB for storing games and questions, maybe Mongo
 * [x] Implement an Express routes to receive information from Django
 * [x] Implement views for starting a new game 
-* [ ] Delete game if any of the player disconnects
+* [x] Delete game if any of the player disconnects
 * [x] Wait for another player to join
 * [x] Start game when two players are paired
 * [x] Throw same question to paired players
@@ -34,13 +34,12 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] If both players select a different image, open the question for resubmission
 * [x] Move to next question on successful submit
 * [ ] Write Automation script to add images to database
-* [ ] Update game table on game finish
-* [ ] Self-pat
+* [x] Self-pat
 * [ ] Work on the UI
 * [ ] Another self-pat
 
 ## Extending the Project:
 * [ ] Make record getting more efficient (using order_by('?') atm)
-* [ ] Handle client disconnect/ page refresh
+* [x] Handle client disconnect/ page refresh
 * [ ] Use mongo/redis/postgres in place of sqlite
 * [ ] Finish game on some number of unsuccessful tries
