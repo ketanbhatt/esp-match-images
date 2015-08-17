@@ -32,7 +32,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Let any player select an image and show message to second player
 * [x] Wait for responses, submit when both player choose the same image
 * [x] If both players select a different image, open the question for resubmission
-* [ ] Move to next question on successful submit
+* [x] Move to next question on successful submit
 * [ ] Write Automation script to add images to database
 * [ ] Update game table on game finish
 * [ ] Self-pat

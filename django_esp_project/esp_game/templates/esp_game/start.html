@@ -14,9 +14,14 @@
 	});
 	socket.on("answers_match", function(data) {
 		alert("Answers Matched!")
-		$.get( "{% url 'esp_game:ajax_get_question' %}", {'questionId': data.newQuestion})
+		var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.newQuestion.toString());
+		$.get( url_mask)
 			.done(function( data ) {
-				console.log("done!")
+				var data = data.question
+				var newForm = '<form action="#" id="makeChoice"><img id="question" src="'+ data.primaryImage +'" alt="Primary Image" value="'+ data.id +'"><input type="radio" name="playerChoice" value="'+ data.secondaryImage1[0] +'"><img src="'+ data.secondaryImage1[1] +'" alt="Secondary Image 1"><input type="radio" name="playerChoice" value="'+ data.secondaryImage2[0] +'"><img src="'+ data.secondaryImage2[1] +'" alt="Secondary Image 2"><input type="radio" name="playerChoice" value="'+ data.secondaryImage3[0] +'"><img src="'+ data.secondaryImage3[1] +'" alt="Secondary Image 3"><input type="submit" value="Submit" id="submit"></form>'
+
+				$("#makeChoice").replaceWith(newForm)
+				$("#message").remove()
 			});
 	});
 	socket.on("match_fail", function() {

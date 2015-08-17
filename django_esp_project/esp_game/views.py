@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.core.urlresolvers import reverse
+from django.core import serializers
 from django.conf import settings
 from django.db.models import F
 from .models import *
@@ -16,7 +16,6 @@ def index(request):
 def setup_game(request):
 	old_game = Game.objects.filter(players=1).first()
 	if old_game:
-		print "old game"
 		old_game.players = F('players') + 1
 		old_game.save()
 		requests.post(socketURL + '/pair', json={'game': old_game.id})
@@ -25,7 +24,6 @@ def setup_game(request):
 		firstQuestion.save()
 		return redirect('esp_game:start_game', game_id=old_game.id)
 	else:
-		print "new game"
 		new_game = Game()
 		new_game.save()
 		context = {
@@ -35,7 +33,6 @@ def setup_game(request):
 		return render(request, 'esp_game/wait.html', context)
 
 def start_game(request, game_id):
-	print "start game"
 	game = Game.objects.get(id=game_id)
 	question = Question.objects.get(game=game)
 	context = {
@@ -69,6 +66,14 @@ def ajax_submit_choice(request):
 			curr_question.save()
 			return JsonResponse({"status": "fail"})
 			
-def ajax_get_question(request, questionId):
-	pass
-			
+def ajax_get_question(request, question_id):
+	question = Question.objects.get(id=question_id)
+	question_json = {
+		'game': question.game.id,
+		'primaryImage': question.primaryImage.url,
+		'secondaryImage1': [question.secondaryImage1.id, question.secondaryImage1.url],
+		'secondaryImage2': [question.secondaryImage2.id, question.secondaryImage2.url],
+		'secondaryImage3': [question.secondaryImage3.id, question.secondaryImage3.url],
+		'id': question.id
+	}
+	return JsonResponse({"question": question_json})
