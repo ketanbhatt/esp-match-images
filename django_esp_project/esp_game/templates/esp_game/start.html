@@ -32,10 +32,10 @@
 	});
 
 	$(document).ready(function() {
-		$("#makeChoice").submit(function( event ) {
+		$("body").on('click', '#submit', function (event) {
 			event.preventDefault();
 			$("#submit").remove()
-			var playerChoice = $("#makeChoice").serializeArray()[0].value
+			var playerChoice = $("input:radio[name=playerChoice]").val()
 			var questionId = $("#question").attr("value")
 			var req_data = {
 				'playerChoice': playerChoice,
