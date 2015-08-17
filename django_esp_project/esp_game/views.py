@@ -48,13 +48,16 @@ def game_disconnected(request, game_id):
 	question = Question.objects.filter(game=game)
 	question.delete()
 	game.delete()
-	return render(request, 'esp_game/disconnect.html')
+	return JsonResponse({"status": "OK"})
 
 def ajax_submit_choice(request):
 	print "ajax_submit_choice"
 	questionId = request.POST.get('questionId')
 	playerChoice = request.POST.get('playerChoice')
-	curr_question = Question.objects.get(id=questionId)
+	curr_question = Question.objects.filter(id=questionId).first()
+
+	if not curr_question:
+		return JsonResponse({"status": "404"})
 
 	if not curr_question.firstPlayerChoice:
 		print "added_choice"

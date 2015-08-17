@@ -41,7 +41,7 @@
 	});
 	socket.on("player_disconnect", function(data) {
 		alert("Opponent disconnected from the game, the game will now end");
-		var url_mask= "{% url 'esp_game:game_disconnected' 12345 %}".replace(/12345/, data.channel.toString());
+		var url_mask= "{% url 'esp_game:index' %}"
 		window.location.replace(url_mask);
 	});
 
@@ -56,9 +56,13 @@
 				'csrfmiddlewaretoken': '{{ csrf_token }}'
 			}
 			$.post( "{% url 'esp_game:ajax_submit_choice' %}", req_data)
-				.done(function( data ) {
+				.done(function( data) {
 					$("#submit").remove()
-					if(data.status == "wait") {
+					if(data.status == "404") {
+						alert("The game was disconnected")
+						var url_mask= "{% url 'esp_game:index' %}"
+						window.location.replace(url_mask);
+					}else if (data.status == "wait") {
 						$(".alert").html("<h5 id='message'>Waiting for opponent</h5>");
 						socket.emit('player_waiting_server', {channel: channel});
 					} else if(data.status == "match") {
