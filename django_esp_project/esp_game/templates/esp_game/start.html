@@ -21,7 +21,7 @@
 			});
 	});
 	socket.on("player_waiting", function() {
-		$("h1").append("<h1 id='message'>Opponent submitted his answer</h1>");
+		$(".alert").html("<h5 id='message'>Opponent submitted his answer</h5>");
 	});
 	socket.on("answers_match", function(data) {
 		alert("Answers Matched!")
@@ -34,10 +34,10 @@
 			});
 	});
 	socket.on("match_fail", function() {
-		alert("Answers Didn't match, try again")
+		alert("Answers didn't match, try again")
 		$("#message").remove()
 		$("#makeChoice").trigger('reset');
-		$("#makeChoice img").last().after('<input type="submit" value="Submit" id="submit">')
+		$("#makeChoice div").last().after('<input type="submit" value="Submit" id="submit" class="btn btn-primary">')
 	});
 	socket.on("player_disconnect", function(data) {
 		alert("Opponent disconnected from the game, the game will now end");
@@ -46,10 +46,9 @@
 	});
 
 	$(document).ready(function() {
-		$("body").on('click', '#submit', function (event) {
+		$("body").on('submit', '#makeChoice', function (event) {
 			event.preventDefault();
-			$("#submit").remove()
-			var playerChoice = $("input:radio[name=playerChoice]").val()
+			var playerChoice = $("#makeChoice").serializeArray()[0].value
 			var questionId = $("#question").attr("value")
 			var req_data = {
 				'playerChoice': playerChoice,
@@ -58,8 +57,9 @@
 			}
 			$.post( "{% url 'esp_game:ajax_submit_choice' %}", req_data)
 				.done(function( data ) {
+					$("#submit").remove()
 					if(data.status == "wait") {
-						$("h1").append("<h1 id='message'>Waiting for opponent</h1>");
+						$(".alert").html("<h5 id='message'>Waiting for opponent</h5>");
 						socket.emit('player_waiting_server', {channel: channel});
 					} else if(data.status == "match") {
 						socket.emit('answers_match_server', {channel: channel, newQuestion: data.newQuestion});
@@ -72,27 +72,73 @@
 
 	var generate_form = function(question) {
 		var data = question
-		var newForm = '<form action="#" id="makeChoice"><img id="question" src="'+ data.primaryImage +'" alt="Primary Image" value="'+ data.id +'"><input type="radio" name="playerChoice" value="'+ data.secondaryImage1[0] +'"><img src="'+ data.secondaryImage1[1] +'" alt="Secondary Image 1"><input type="radio" name="playerChoice" value="'+ data.secondaryImage2[0] +'"><img src="'+ data.secondaryImage2[1] +'" alt="Secondary Image 2"><input type="radio" name="playerChoice" value="'+ data.secondaryImage3[0] +'"><img src="'+ data.secondaryImage3[1] +'" alt="Secondary Image 3"><input type="submit" value="Submit" id="submit"></form>'
+		var newForm = '<form action="#" id="makeChoice">\
+				<div class="row">\
+					<div class="col-md-3"></div>\
+					<div class="col-md-6">\
+						<img id="question" src="'+ data.primaryImage +'" alt="Primary Image" value="'+ data.id +'" class="primaryImage img-responsive">\
+					</div>\
+					<div class="col-md-3"></div>\
+				</div>\
+				<br>\
+				<div class="row">\
+					<div class="col-md-4">\
+						<label class="radio-img">\
+							<input type="radio" name="playerChoice" value="'+ data.secondaryImage1[0] +'"><img src="'+ data.secondaryImage1[1] +'" alt="Secondary Image 1" class="secondaryImage img-responsive">\
+						</label>\
+					</div>\
+					<div class="col-md-4">\
+						<label class="radio-img">\
+							<input type="radio" name="playerChoice" value="'+ data.secondaryImage2[0] +'"><img src="'+ data.secondaryImage2[1] +'" alt="Secondary Image 2" class="secondaryImage img-responsive">\
+						</label>\
+					</div>\
+					<div class="col-md-4">\
+						<label class="radio-img">\
+							<input type="radio" name="playerChoice" value="'+ data.secondaryImage3[0] +'"><img src="'+ data.secondaryImage3[1] +'" alt="Secondary Image 3" class="secondaryImage img-responsive">\
+						</label>\
+					</div>\
+				</div>\
+				<input type="submit" value="Submit" id="submit" class="btn btn-primary">\
+			</form>'
 		return newForm
 	}
-
 </script>
 {% endblock %}
 
 {% block body_custom %}
-<h1 id="heading">{{ heading }}</h1>
+	<div class="inner cover">
+		<h1 id="heading" class="cover-heading">{{ heading }}</h1>
+			{% if status == 'paired' %}
+			<form action="#" id="makeChoice">
+				<div class="row">
+					<div class="col-md-3"></div>
+					<div class="col-md-6">
+						<img id="question" src="{{ question.primaryImage.url }}" alt="Primary Image" value="{{ question.id }}" class="primaryImage img-responsive">
+					</div>
+					<div class="col-md-3"></div>
+				</div>	
+				<br>
+				<div class="row">
+					<div class="col-md-4">
+						<label class="radio-img">
+							<input type="radio" name="playerChoice" value="{{ question.secondaryImage1.id }}"><img src="{{ question.secondaryImage1.url }}" alt="Secondary Image 1" class="secondaryImage img-responsive">
+						</label>
+					</div>
+					<div class="col-md-4">
+						<label class="radio-img">
+							<input type="radio" name="playerChoice" value="{{ question.secondaryImage2.id }}"><img src="{{ question.secondaryImage2.url }}" alt="Secondary Image 2" class="secondaryImage img-responsive">
+						</label>
+					</div>
+					<div class="col-md-4">
+						<label class="radio-img">
+							<input type="radio" name="playerChoice" value="{{ question.secondaryImage3.id }}"><img src="{{ question.secondaryImage3.url }}" alt="Secondary Image 3" class="secondaryImage img-responsive">
+						</label>
+					</div>
+				</div>
 
-{% if status == 'paired' %}
-<form action="#" id="makeChoice">
-	<img id="question" src="{{ question.primaryImage.url }}" alt="Primary Image" value="{{ question.id }}">
+				<input type="submit" value="Submit" id="submit" class="btn btn-primary">
+			</form>
+			{% endif %}
+	</div>
 
-	<input type="radio" name="playerChoice" value="{{ question.secondaryImage1.id }}"><img src="{{ question.secondaryImage1.url }}" alt="Secondary Image 1">
-	<input type="radio" name="playerChoice" value="{{ question.secondaryImage2.id }}"><img src="{{ question.secondaryImage2.url }}" alt="Secondary Image 2">
-	<input type="radio" name="playerChoice" value="{{ question.secondaryImage3.id }}"><img src="{{ question.secondaryImage3.url }}" alt="Secondary Image 3">
-
-	<input type="submit" value="Submit" id="submit">
-</form>
-{% endif %}
-
-<a href="{% url 'esp_game:index' %}">Index</a>
 {% endblock %}

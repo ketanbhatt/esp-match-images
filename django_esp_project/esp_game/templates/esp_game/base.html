@@ -1,11 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>ESP Fun!</title>
+	{% load staticfiles %}
+	<title>ESP Fun!</title>	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="{% static 'esp_game/cover.css' %}">
+	<link rel="stylesheet" href="{% static 'esp_game/mystyle.css' %}">
 	{% block head_scripts %} {% endblock %}
 </head>
 <body>
-	{% block body_custom %} {% endblock %}
+	<div class="alert">
+	      
+      </div>
+	<div class="site-wrapper">
+		<div class="site-wrapper-inner">
+			<div class="cover-container">
+				<div class="masthead clearfix">
+					<div class="inner">
+						<h3 class="masthead-brand">ESP Game for Matching Images</h3>
+						<nav>
+								<ul class="nav masthead-nav">
+									<li {% if home %}class="active"{% endif %}><a href="{% url 'esp_game:index' %}">Home</a></li>
+									<li><a href="https://github.com/ketanbhatt/esp-match-images">Github</a></li>
+								</ul>
+				              </nav>
+					</div>
+			      </div>
+				{% block body_custom %} {% endblock %}
+				<div class="mastfoot">
+					<div class="inner">
+						<p>Made for <a href="https://squadrun.co/">SquadRun</a>, by <a href="https://github.com/ketanbhatt">#ketanbhatt</a>.</p>
+					</div>
+			      </div>
+			</div>
+		</div>
+	</div>
+
 </body>
 </html>

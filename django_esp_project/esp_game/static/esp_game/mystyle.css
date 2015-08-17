@@ -1,0 +1,23 @@
+.radio-img > input{ 
+	visibility: hidden;
+	position: absolute;
+}
+.radio-img > input + img{
+	cursor:pointer;
+}
+.radio-img > input:checked + img{
+	border: 2px solid blue;
+}
+
+.primaryImage {
+	height:250px;
+}
+
+.secondaryImage {
+	height: 100px;
+}
+
+.alert {
+	position: absolute;
+	z-index:1;
+}

@@ -11,7 +11,7 @@ import requests
 socketURL = settings.SOCKET_URL
 
 def index(request):
-	return render(request, 'esp_game/index.html')
+	return render(request, 'esp_game/index.html', {'home': True})
 
 def start_game(request):
 	print "start_game"

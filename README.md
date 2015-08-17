@@ -35,7 +35,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Move to next question on successful submit
 * [ ] Write Automation script to add images to database
 * [x] Self-pat
-* [ ] Work on the UI
+* [x] Work on the UI
 * [ ] Another self-pat
 
 ## Extending the Project:

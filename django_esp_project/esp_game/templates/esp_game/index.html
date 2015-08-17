@@ -1,9 +1,7 @@
 {% extends "esp_game/base.html" %}
 
 {% block body_custom %}
-<h1>ESP Game for Matching Images</h1>
-
-<form action="{% url 'esp_game:start_game' %}">
-	<input type="submit" value="Press to Create/Join a game">
-</form>
+	<form action="{% url 'esp_game:start_game' %}">
+		<input type="submit" value="Press to Create/Join a game" class="btn btn-default">
+	</form>
 {% endblock %}
