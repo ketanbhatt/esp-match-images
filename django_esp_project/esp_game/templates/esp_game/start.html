@@ -3,14 +3,21 @@
 {% block head_scripts %}
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script>
+	var gameNum
+	var totalTime = 0
+	var tempTime = 0
 	var socket = io('{{ socketURL }}');
 	var channel = "{{ game.id }}"
 	var status = "{{ status }}"
 	socket.emit('join', {channel: channel});
 	if(status == 'paired') {
 		socket.emit('paired_server', {question: "{{ question.id }}", heading: "{{ heading }}"});
+		gameNum = 1
+		tempTime = new Date().getTime()
 	}
 	socket.on("paired", function(data) {
+		gameNum = 1
+		tempTime = new Date().getTime()
 		var heading = data.heading
 		var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.question.toString());
 		$.get( url_mask)
@@ -24,30 +31,47 @@
 		$(".alert").html("<h5 id='message'>Opponent submitted his answer</h5>");
 	});
 	socket.on("answers_match", function(data) {
+		tempTime = new Date().getTime()
+		console.log("match " + totalTime)
 		alert("Answers Matched!")
-		var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.newQuestion.toString());
-		$.get( url_mask)
-			.done(function( data ) {
-				var newForm = generate_form(data.question)
-				$("#makeChoice").replaceWith(newForm)
-				$("#message").remove()
-			});
+		if(gameNum == 2) {
+			alert("You clocked in at " + totalTime + " seconds.")
+			var url_mask= "{% url 'esp_game:index' %}"
+			window.location.replace(url_mask);
+		} else {
+			gameNum += 1
+			var url_mask = "{% url 'esp_game:ajax_get_question' 12345 %}".replace(/12345/, data.newQuestion.toString());
+			$.get( url_mask)
+				.done(function( data ) {
+					var newForm = generate_form(data.question)
+					$("#makeChoice").replaceWith(newForm)
+					$("#message").remove()
+				});
+		}
 	});
 	socket.on("match_fail", function() {
+		totalTime -= tempTime
+		console.log("fail " + totalTime)
+		tempTime = new Date().getTime()
 		alert("Answers didn't match, try again")
 		$("#message").remove()
 		$("#makeChoice").trigger('reset');
 		$("#makeChoice div").last().after('<input type="submit" value="Submit" id="submit" class="btn btn-primary">')
 	});
 	socket.on("player_disconnect", function(data) {
-		alert("Opponent disconnected from the game, the game will now end");
-		var url_mask= "{% url 'esp_game:index' %}"
-		window.location.replace(url_mask);
+		if(gameNum != 2) {
+			alert("Opponent disconnected from the game, the game will now end");
+			var url_mask= "{% url 'esp_game:index' %}"
+			window.location.replace(url_mask);			
+		}
 	});
 
 	$(document).ready(function() {
 		$("body").on('submit', '#makeChoice', function (event) {
 			event.preventDefault();
+			var now = new Date().getTime()
+			tempTime = (now - tempTime)/1000
+			totalTime += tempTime
 			var playerChoice = $("#makeChoice").serializeArray()[0].value
 			var questionId = $("#question").attr("value")
 			var req_data = {
