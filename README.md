@@ -37,7 +37,7 @@ Create an [ESP game](http://en.wikipedia.org/wiki/ESP_game) for Matching images.
 * [x] Self-pat
 * [x] Work on the UI
 * [ ] Another self-pat
-* [*] Stimulate rounds
+* [x] Stimulate rounds
 * [ ] Record time for submission of an answer
 * [ ] Ignore times for unsuccessful matches and store ones for success
 
